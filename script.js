@@ -2,19 +2,21 @@
    $JOEL — The African Bull · front-end behavior
    ============================================================ */
 
-// The Dexscreener pair the user shared (Solana)
+// $JOEL token (Solana) — authoritative contract address
+const TOKEN_ADDRESS = '49K2SVmPfP5jXxaJtSfA116sqSRcAsFX44x2EQubpump';
+// The Dexscreener pair the user shared
 const PAIR_ADDRESS = 'F4RpL9YWn66LEqQAqR69okWtA36To1qKCpe7kdZUyT9J';
 const CHAIN = 'solana';
 const DEX_URL = `https://dexscreener.com/${CHAIN}/${PAIR_ADDRESS}`;
+const PUMP_URL = `https://pump.fun/coin/${TOKEN_ADDRESS}`;
 
 /* ---- year ---- */
 document.getElementById('year').textContent = new Date().getFullYear();
 
 /* ---- wire external links ---- */
-['buyDexscreener', 'socialDex'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.href = DEX_URL;
-});
+const setHref = (id, url) => { const el = document.getElementById(id); if (el) el.href = url; };
+setHref('buyDexscreener', PUMP_URL);
+setHref('socialDex', DEX_URL);
 
 /* ---- Dexscreener chart embed ---- */
 (function embedChart () {
@@ -34,21 +36,12 @@ document.getElementById('year').textContent = new Date().getFullYear();
   host.appendChild(fb);
 })();
 
-/* ---- fetch real contract (base token mint) from Dexscreener API ---- */
-(async function loadContract () {
+/* ---- contract address + one-click copy ---- */
+(function loadContract () {
   const caValue = document.getElementById('caValue');
   const caCopy = document.getElementById('caCopy');
   const caBox = document.getElementById('caBox');
-  let contract = PAIR_ADDRESS; // sensible fallback
-
-  try {
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${CHAIN}/${PAIR_ADDRESS}`);
-    if (res.ok) {
-      const data = await res.json();
-      const pair = data?.pair || (data?.pairs && data.pairs[0]);
-      if (pair?.baseToken?.address) contract = pair.baseToken.address;
-    }
-  } catch (_) { /* offline / blocked — keep fallback */ }
+  const contract = TOKEN_ADDRESS;
 
   caValue.textContent = contract;
   caValue.dataset.full = contract;
